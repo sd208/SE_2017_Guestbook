@@ -1,4 +1,4 @@
-# SE_2017_Guestbook
+# SE2017 - Guestbook
 
 Members : Xi Xiao, Shubhangi Dubey
 
