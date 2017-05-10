@@ -18,7 +18,6 @@
 import os
 import urllib
 
-from google.appengine.api import users
 from google.appengine.ext import ndb
 
 import jinja2
@@ -32,12 +31,6 @@ JINJA_ENVIRONMENT = jinja2.Environment(
 
 DEFAULT_GUESTBOOK_NAME = 'default_guestbook'
 
-
-# We set a parent key on the 'Greetings' to ensure that they are all
-# in the same entity group. Queries across the single entity group
-# will be consistent. However, the write rate should be limited to
-# ~1/second.
-
 def guestbook_key(guestbook_name=DEFAULT_GUESTBOOK_NAME):
     """Constructs a Datastore key for a Guestbook entity.
 
@@ -45,48 +38,76 @@ def guestbook_key(guestbook_name=DEFAULT_GUESTBOOK_NAME):
     """
     return ndb.Key('Guestbook', guestbook_name)
 
-
-# [START greeting]
+# [START Author]
 class Author(ndb.Model):
-    """Sub model for representing an author."""
-    identity = ndb.StringProperty(indexed=False)
     email = ndb.StringProperty(indexed=False)
+    first_name = ndb.StringProperty(indexed=False)
+    last_name = ndb.StringProperty(indexed=False)
+    designation = ndb.StringProperty(indexed=False)
+    graduation_year = ndb.StringProperty(indexed=False)
+    school = ndb.StringProperty(indexed=False)
+    major = ndb.StringProperty(indexed=False)
+    website = ndb.StringProperty(indexed=False)
+    date = ndb.DateTimeProperty(auto_now_add=True)
+# [END Author]
 
-
-class Greeting(ndb.Model):
-    """A main model for representing an individual Guestbook entry."""
-    author = ndb.StructuredProperty(Author)
+# [START Comment]
+class Comment(ndb.Model):
+    author_key = ndb.StringProperty(indexed=False)
+    author_email = ndb.StringProperty(indexed=False)
+    author_first_name = ndb.StringProperty(indexed=False)
+    author_last_name = ndb.StringProperty(indexed=False)
     content = ndb.StringProperty(indexed=False)
     date = ndb.DateTimeProperty(auto_now_add=True)
-# [END greeting]
-
+# [END Comment]
 
 # [START main_page]
 class MainPage(webapp2.RequestHandler):
-
     def get(self):
+        # set up author
+        author = Author()
+        author.put()
+        # get current guestbook name
         guestbook_name = self.request.get('guestbook_name',
                                           DEFAULT_GUESTBOOK_NAME)
-        greetings_query = Greeting.query(
-            ancestor=guestbook_key(guestbook_name)).order(-Greeting.date)
-        greetings = greetings_query.fetch(10)
+        # get all comments of current guestbook
+        comments_query = Comment.query(
+            ancestor=guestbook_key(guestbook_name)).order(-Comment.date)
+        comments = comments_query.fetch()
 
-        user = users.get_current_user()
-        if user:
-            url = users.create_logout_url(self.request.uri)
-            url_linktext = 'Logout'
-        else:
-            url = users.create_login_url(self.request.uri)
-            url_linktext = 'Login'
-
+        # feed values to webpage
         template_values = {
-            'user': user,
-            'greetings': greetings,
+            'author': author,
+            'comments': comments,
             'guestbook_name': urllib.quote_plus(guestbook_name),
-            'url': url,
-            'url_linktext': url_linktext,
         }
+        # get jinjia template
+        template = JINJA_ENVIRONMENT.get_template('index.html')
+        self.response.write(template.render(template_values))
 
+    def post(self):
+        # create new author object
+        author = Author()
+        user = author.email = self.request.get('user_email')
+        author.last_name = self.request.get('user_last_name')
+        author.first_name = self.request.get('user_first_name')
+        author.designation = self.request.get('user_designation')
+        author.school = self.request.get('user_school')
+        author.graduation_year = self.request.get('user_graduation_year')
+        author.major = self.request.get('user_major')
+        author.website = self.request.get('user_website')
+        author.put()
+        guestbook_name = self.request.get('guestbook_name',
+                                          DEFAULT_GUESTBOOK_NAME)
+        comments_query = Comment.query(
+            ancestor=guestbook_key(guestbook_name)).order(-Comment.date)
+        comments = comments_query.fetch()
+        template_values = {
+            'author': author,
+            'comments': comments,
+            'guestbook_name': urllib.quote_plus(guestbook_name),
+        }
+        # get jinjia template
         template = JINJA_ENVIRONMENT.get_template('index.html')
         self.response.write(template.render(template_values))
 # [END main_page]
@@ -94,33 +115,38 @@ class MainPage(webapp2.RequestHandler):
 
 # [START guestbook]
 class Guestbook(webapp2.RequestHandler):
-
     def post(self):
-        # We set the same parent key on the 'Greeting' to ensure each
-        # Greeting is in the same entity group. Queries across the
-        # single entity group will be consistent. However, the write
-        # rate to a single entity group should be limited to
-        # ~1/second.
         guestbook_name = self.request.get('guestbook_name',
                                           DEFAULT_GUESTBOOK_NAME)
-        greeting = Greeting(parent=guestbook_key(guestbook_name))
-
-        if users.get_current_user():
-            greeting.author = Author(
-                    identity=users.get_current_user().user_id(),
-                    email=users.get_current_user().email())
-
-        greeting.content = self.request.get('content')
-        greeting.put()
-
+        comment = Comment(parent=guestbook_key(guestbook_name))
+        comment.content = self.request.get('content')
+        comment.author_key = self.request.get('author_key')
+        comment.author_email = self.request.get('author_email')
+        comment.author_first_name = self.request.get('author_first_name')
+        comment.author_last_name = self.request.get('author_last_name')
+#         address_k = db.Key.from_path('Employee', 'asalieri', 'Address', 1)
+# address = db.get(address_k)
+        comment.put()
         query_params = {'guestbook_name': guestbook_name}
         self.redirect('/?' + urllib.urlencode(query_params))
 # [END guestbook]
 
+# [START GoToLogin]
+class Login(webapp2.RequestHandler):
+    def get(self):
+        guestbook_name = self.request.get('guestbook_name',
+                                          DEFAULT_GUESTBOOK_NAME)
+        template_values = {
+            'guestbook_name': urllib.quote_plus(guestbook_name),
+        }
+        template = JINJA_ENVIRONMENT.get_template('login.html')
+        self.response.write(template.render(template_values))
+# [END GoToLogin]
 
 # [START app]
 app = webapp2.WSGIApplication([
     ('/', MainPage),
     ('/sign', Guestbook),
+    ('/login', Login),
 ], debug=True)
 # [END app]

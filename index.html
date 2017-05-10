@@ -41,36 +41,41 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="brand" href="#">App Engine Guestbook</a>
+          <a class="brand" href="#">New York University Guestbook</a>
           <div class="nav-collapse collapse pull-right">
-            <a href="{{ url|safe }}" class="btn">{{ url_linktext }}</a>
           </div>
         </div>
       </div>
     </div>
     <div class="container">
-      <!-- [START greetings] -->
-      {% for greeting in greetings %}
+      <!-- [START comments] -->
+        <br>
+        {% if author.first_name != None or author.last_name != None %}
+            Welcome, {{ author.first_name }} {{ author.last_name }} !
+        {% else %}
+            Welcome, NYU friend!
+        {% endif %}
+      {% for comment in comments %}
       <div class="row">
-        {% if greeting.author %}
-          <b>{{ greeting.author.email }}
-            {% if user and user.user_id() == greeting.author.identity %}
+        {% if comment.author_email != None or comment.author_first_name != None or comment.author_last_name != None %}
+          <b>{{ comment.author_first_name }} {{ comment.author_last_name }} ({{ comment.author_email }})
+          {% if author and author.key == comment.author_key %}
               (You)
-            {% endif %}
-          </b>
-          at {{ greeting.date.strftime("%Y-%m-%d %H:%M:%S") }}
+          {% endif %}
+            </b>
+          at {{ comment.date.strftime("%Y-%m-%d %H:%M:%S") }}
           wrote:
         {% else %}
           An anonymous person 
-          at {{ greeting.date.strftime("%Y-%m-%d %H:%M:%S") }}
+          at {{ comment.date.strftime("%Y-%m-%d %H:%M:%S") }}
           wrote:
         {% endif %}
-        <blockquote>{{ greeting.content }}</blockquote>
+        <blockquote>{{ comment.content }}</blockquote>
       </div>
       {% endfor %}
-      <!-- [END greetings] -->
-
-      <form action="/sign?guestbook_name={{ guestbook_name }}" method="post">
+      <!-- [END comments] -->
+        
+         <form action="/sign?guestbook_name={{guestbook_name}}&author_email={{author.email}}&author_first_name={{author.first_name}}&author_last_name={{author.last_name}}&author_key={{author.key}}" method="post">
         <div><textarea name="content" class="input-block-level" rows="3"></textarea></div>
         <div><input type="submit" class="btn btn-large btn-primary" value="Sign Guestbook"></div>
       </form>
@@ -81,8 +86,10 @@
         <input value="{{ guestbook_name }}" name="guestbook_name">
         <input type="submit" value="switch">
       </form>
-
-      <a href="{{ url|safe }}">{{ url_linktext }}</a>
+        
+    <form action="/login?guestbook_name={{ guestbook_name }}" method="get">
+        <input type="submit" value="login">
+      </form>
     </div>
   </body>
 </html>
