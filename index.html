@@ -57,9 +57,13 @@
             {% if user and user.user_id() == greeting.author.identity %}
               (You)
             {% endif %}
-          </b> wrote:
+          </b>
+          at {{ greeting.date.strftime("%Y-%m-%d %H:%M:%S") }}
+          wrote:
         {% else %}
-          An anonymous person wrote:
+          An anonymous person 
+          at {{ greeting.date.strftime("%Y-%m-%d %H:%M:%S") }}
+          wrote:
         {% endif %}
         <blockquote>{{ greeting.content }}</blockquote>
       </div>
