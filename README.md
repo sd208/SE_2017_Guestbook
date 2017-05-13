@@ -4,10 +4,17 @@ Members : Xi Xiao, Shubhangi Dubey
 
 For our Software Engineering class, created a guestbook to log comments from users for various events.
 
-##Objective 
+## Objective 
  To create an online guestbook where event managers are able to collect views and suggestions from their guests.
  
- ##Technologies Used
+ ## Technologies Used
  
  ![Tech Table Image](https://github.com/sd208/SE_2017_Guestbook/blob/master/Project%20Documents/Technologies%20table.png)
  
+ ## Use Case Diagram
+ 
+ ### Actors
+  - Guest
+  - Event Manager
+  
+![Use Case Diagram](https://github.com/sd208/SE_2017_Guestbook/blob/master/Project%20Documents/Use%20Case%20Diagram.png)
