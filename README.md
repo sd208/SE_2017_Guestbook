@@ -20,7 +20,7 @@ For our Software Engineering class, created a guestbook to log comments from use
 ![Use Case Diagram](https://github.com/sd208/SE_2017_Guestbook/blob/master/Project%20Documents/Use%20Case%20Diagram.png)
 
 ### Use Cases
-The use case specifications can be found in `Project Documents` 
+The use case specification details are as follows:
 
 1. Enter Comments in Guestbook Webpage: 
       https://github.com/sd208/SE_2017_Guestbook/blob/master/Project%20Documents/Use%20Case%201.pdf
