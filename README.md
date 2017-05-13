@@ -23,5 +23,4 @@ For our Software Engineering class, created a guestbook to log comments from use
 The use case specifications can be found in `Project Documents` .
 
 Intensive details about the entire project process can be found in our storyboard - 
-
 https://github.com/sd208/SE_2017_Guestbook/tree/master/Project%20Documents#boards?repos=90792083
