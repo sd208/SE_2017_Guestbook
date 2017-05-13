@@ -21,6 +21,7 @@ For our Software Engineering class, created a guestbook to log comments from use
 
 ### Use Cases
 The use case specifications can be found in `Project Documents` 
+
 1. Enter Comments in Guestbook Webpage: 
       https://github.com/sd208/SE_2017_Guestbook/blob/master/Project%20Documents/Use%20Case%201.pdf
 2. Signup with Professional Details:
