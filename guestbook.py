@@ -40,7 +40,7 @@ def guestbook_key(guestbook_name=DEFAULT_GUESTBOOK_NAME):
 
 # [START Author]
 class Author(ndb.Model):
-    email = ndb.StringProperty(indexed=False)
+    email = ndb.StringProperty(indexed=True)
     first_name = ndb.StringProperty(indexed=False)
     last_name = ndb.StringProperty(indexed=False)
     designation = ndb.StringProperty(indexed=False)
@@ -53,7 +53,7 @@ class Author(ndb.Model):
 
 # [START Comment]
 class Comment(ndb.Model):
-    author_key = ndb.StringProperty(indexed=False)
+    author = ndb.StructuredProperty(Author)
     author_email = ndb.StringProperty(indexed=False)
     author_first_name = ndb.StringProperty(indexed=False)
     author_last_name = ndb.StringProperty(indexed=False)
@@ -64,12 +64,27 @@ class Comment(ndb.Model):
 # [START main_page]
 class MainPage(webapp2.RequestHandler):
     def get(self):
-        # set up author
-        author = Author()
-        author.put()
-        # get current guestbook name
         guestbook_name = self.request.get('guestbook_name',
                                           DEFAULT_GUESTBOOK_NAME)
+        author_email = self.request.get('author_email')
+        print author_email
+        if author_email == None or author_email == '' or len(author_email) == 0:
+            anonymous_author = Author()
+            anonymous_author.put()
+            author = anonymous_author
+        else:
+            query = Author.query(Author.email == author_email)
+            # print query
+            # print type(query)
+
+            authors = query.fetch(1)
+            if authors == None or len(authors) == 0:
+                author = Author()
+            else:
+                author = authors[0]
+            # print type(author)
+            # print author
+
         # get all comments of current guestbook
         comments_query = Comment.query(
             ancestor=guestbook_key(guestbook_name)).order(-Comment.date)
@@ -88,7 +103,7 @@ class MainPage(webapp2.RequestHandler):
     def post(self):
         # create new author object
         author = Author()
-        user = author.email = self.request.get('user_email')
+        author.email = self.request.get('user_email')
         author.last_name = self.request.get('user_last_name')
         author.first_name = self.request.get('user_first_name')
         author.designation = self.request.get('user_designation')
@@ -112,7 +127,6 @@ class MainPage(webapp2.RequestHandler):
         self.response.write(template.render(template_values))
 # [END main_page]
 
-
 # [START guestbook]
 class Guestbook(webapp2.RequestHandler):
     def post(self):
@@ -120,14 +134,20 @@ class Guestbook(webapp2.RequestHandler):
                                           DEFAULT_GUESTBOOK_NAME)
         comment = Comment(parent=guestbook_key(guestbook_name))
         comment.content = self.request.get('content')
-        comment.author_key = self.request.get('author_key')
-        comment.author_email = self.request.get('author_email')
+        author_email = comment.author_email = self.request.get('author_email')
         comment.author_first_name = self.request.get('author_first_name')
         comment.author_last_name = self.request.get('author_last_name')
-#         address_k = db.Key.from_path('Employee', 'asalieri', 'Address', 1)
-# address = db.get(address_k)
+        query = Author.query(Author.email == author_email)
+        authors = query.fetch(1)
+        if authors == None or len(authors) == 0:
+            author = Author()
+        else:
+            author = authors[0]
+        comment.author = author
         comment.put()
-        query_params = {'guestbook_name': guestbook_name}
+        query_params = {'guestbook_name': guestbook_name,
+                        'author_email': author_email,
+                        }
         self.redirect('/?' + urllib.urlencode(query_params))
 # [END guestbook]
 

@@ -58,13 +58,46 @@
       {% for comment in comments %}
       <div class="row">
         {% if comment.author_email != None or comment.author_first_name != None or comment.author_last_name != None %}
-          <b>{{ comment.author_first_name }} {{ comment.author_last_name }} ({{ comment.author_email }})
+          <b>{{ comment.author_first_name }} {{ comment.author_last_name }} ({{ comment.author_email }})</b>
           {% if author and author.key == comment.author_key %}
               (You)
           {% endif %}
-            </b>
           at {{ comment.date.strftime("%Y-%m-%d %H:%M:%S") }}
-          wrote:
+          wrote:<br>
+          <button onclick="toggle(this.id)" id={{comment.key.id()}}>Show info</button>
+          <div id=c{{comment.key.id()}} style="display: none">
+              {% if comment.author.first_name != None %}
+                    First Name: {{ comment.author.first_name }}            
+              {% endif %}
+              <br>
+              {% if comment.author.last_name != None %}
+                    Last Name: {{ comment.author.last_name }}           
+              {% endif %}
+              <br>
+              {% if comment.author.email != None %}
+                    Email: {{ comment.author.email }}             
+              {% endif %}
+              <br> 
+              {% if comment.author.designation != None %}
+                    Designation: {{ comment.author.designation }}          
+              {% endif %}
+              <br> 
+              {% if comment.author.graduation_year != None %}
+                    Graduation Year: {{ comment.author.graduation_year }}         
+              {% endif %}
+              <br> 
+              {% if comment.author.school != None %}
+                    School: {{ comment.author.school }}
+              {% endif %}
+              <br> 
+              {% if comment.author.major != None %}
+                    Major: {{ comment.author.major }}       
+              {% endif %}
+              <br> 
+              {% if comment.author.website != None or comment.author.website.length != 0 %}
+                    Website: {{ comment.author.website }}
+              {% endif %}
+          </div>
         {% else %}
           An anonymous person 
           at {{ comment.date.strftime("%Y-%m-%d %H:%M:%S") }}
@@ -75,7 +108,10 @@
       {% endfor %}
       <!-- [END comments] -->
         
-         <form action="/sign?guestbook_name={{guestbook_name}}&author_email={{author.email}}&author_first_name={{author.first_name}}&author_last_name={{author.last_name}}&author_key={{author.key}}" method="post">
+         <form action="/sign?guestbook_name={{guestbook_name}}" method="post">
+        <input type="hidden" name="author_email" value="{{author.email}}">
+        <input type="hidden" name="author_first_name" value="{{author.first_name}}">
+        <input type="hidden" name="author_last_name" value="{{author.last_name}}">
         <div><textarea name="content" class="input-block-level" rows="3"></textarea></div>
         <div><input type="submit" class="btn btn-large btn-primary" value="Sign Guestbook"></div>
       </form>
@@ -93,4 +129,17 @@
     </div>
   </body>
 </html>
+
+<script>
+    function toggle(id) {
+        console.log(id);
+        var x = document.getElementById("c"+id);
+        console.log(x);
+        if (x.style.display === 'none') {
+            x.style.display = 'block';
+        } else {
+            x.style.display = 'none';
+        }
+    }
+</script>
 {% endautoescape %}
