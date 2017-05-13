@@ -9,7 +9,7 @@ For our Software Engineering class, created a guestbook to log comments from use
  
  ## Technologies Used
  
- ![Tech Table Image](https://github.com/sd208/SE_2017_Guestbook/blob/master/Project%20Documents/Technologies%20table.png)
+ ![Tech Table Image](https://github.com/sd208/SE_2017_Guestbook/blob/master/Project%20Documents/Tech%20Table.png)
  
  ## Use Case Diagram
  
@@ -18,3 +18,10 @@ For our Software Engineering class, created a guestbook to log comments from use
   - Event Manager
   
 ![Use Case Diagram](https://github.com/sd208/SE_2017_Guestbook/blob/master/Project%20Documents/Use%20Case%20Diagram.png)
+
+
+The use case specifications can be found in `Project Documents` .
+
+Intensive details about the entire project process can be found in our storyboard - 
+
+https://github.com/sd208/SE_2017_Guestbook/tree/master/Project%20Documents#boards?repos=90792083
