@@ -1,11 +1,11 @@
-# SE2017 - Guestbook
+# SE2017 - New York University Guestbook
 
 Members : Xi Xiao, Shubhangi Dubey
 
 For our Software Engineering class, created a guestbook to log comments from users for various events.
 
 ## Objective 
- To create an online guestbook where event managers are able to collect views and suggestions from their guests.
+ To create an online guestbook where event managers, at New York University, are able to collect views and suggestions from their guests.
  
  ## Technologies Used
  
